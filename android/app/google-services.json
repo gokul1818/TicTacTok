@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "776839629556",
+    "firebase_url": "https://esp-test-71219-default-rtdb.firebaseio.com",
+    "project_id": "esp-test-71219",
+    "storage_bucket": "esp-test-71219.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:776839629556:android:9028bc733c9d4a2939aca1",
+        "android_client_info": {
+          "package_name": "com.tictactok"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9dyfoqGcvCNTfUMtPMHmZVqF-woF9rtw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
