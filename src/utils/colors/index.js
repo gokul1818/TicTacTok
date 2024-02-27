@@ -8,7 +8,7 @@ export const colors = {
 
 
   //GREY FAMILY
-  grey95: "#697D95",
+  grey3B: "#20243B",
   greyF1: "#E8EDF1",
   grey63: "#636363",
   grey31: "#252A31",
@@ -33,7 +33,7 @@ export const colors = {
   red57: '#EB5757',
   redF0: '#FF0000',
   // ORANGE COLOR
-  secondaryOrange: "#FD4114",
+  secondaryOrange: "#F5757C",
   orange3F: "#FD643F",
   orange00: '#BA5D00',
   orangeDA: '#FCECDA',
