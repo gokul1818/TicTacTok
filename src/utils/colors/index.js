@@ -9,7 +9,7 @@ export const colors = {
 
   //GREY FAMILY
   grey3B: "#20243B",
-  greyF1: "#E8EDF1",
+  grey4D: "#2F334D",
   grey63: "#636363",
   grey31: "#252A31",
   greyFA: '#EDECFA',
@@ -34,7 +34,7 @@ export const colors = {
   redF0: '#FF0000',
   // ORANGE COLOR
   secondaryOrange: "#F5757C",
-  orange3F: "#FD643F",
+  orange8D: "#EDB38D",
   orange00: '#BA5D00',
   orangeDA: '#FCECDA',
   ORANGE_DD: "#FCE4DD",
@@ -53,6 +53,6 @@ export const colors = {
   blueCB: '#0172CB',
   blueC5: "#56BCC5",
   blueED: '#2F80ED',
-  blueE1: '#3388E1',
+  blueEA: '#3287EA',
   blueF8: '#CDE3F8'
 };
