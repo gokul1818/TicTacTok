@@ -12,7 +12,7 @@ const App = () => {
   useEffect(() => {
     setTimeout(() => {
       setIsSplashVisisble(false);
-    }, 4000);
+    }, 5000);
   }, []);
   if (isSplashVisible) {
     return <Splash />;

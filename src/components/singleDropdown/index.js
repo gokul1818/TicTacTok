@@ -18,17 +18,40 @@ const SingleDropDown = ({
 }) => {
     const [open, setOpen] = useState(false);
     return (
-        <View style={{ zIndex: 3 }}>
-            <DropDownPicker
+        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+            {/* <DropDownPicker
                 open={open}
                 value={value}
                 dropDownDirection="bottom"
                 items={items}
                 setOpen={setOpen}
-            
+                scrollViewProps={{ scrollEnabled: true }}
                 // setValue={setValue}
                 onSelectItem={setValue}
                 placeholder={placeholder}
+                style={{ ...styles.mainContainer(open), ...mainContainerStyle }}
+                dropDownContainerStyle={{
+                    ...styles.dropDownContainerStyle,
+                    ...CustomDropDownContainerStyle,
+                    zIndex: 2,
+                }}
+                ArrowDownIconComponent={() => (
+                    <Image source={iconpathurl.downArrow} style={styles.downArrowIcon} />
+                )}
+                ArrowUpIconComponent={() => (
+                    <Image source={iconpathurl.downArrow} style={styles.upArrowIcon} />
+                )}
+                listItemContainerStyle={styles.listItemContainerStyle}
+            /> */}
+            <DropDownPicker
+                open={open}
+                value={value}
+                items={items}
+                setOpen={setOpen}
+                onSelectItem={setValue}
+                placeholder={placeholder}
+                // containerStyle={{ height: 40, width: 200 }}
+                dropDownStyle={{ backgroundColor: '#fafafa' }}
                 style={{ ...styles.mainContainer(open), ...mainContainerStyle }}
                 dropDownContainerStyle={{
                     ...styles.dropDownContainerStyle,
@@ -78,12 +101,12 @@ export const styles = StyleSheet.create({
         transform: [{ rotate: "180deg" }],
     },
     listItemContainerStyle: {
-    ...baseStyle.marginVertical("0.5%"),
+        ...baseStyle.marginVertical("0.5%"),
         borderBottomWidth: 2,
         width: "100%",
         alignSelf: "flex-end",
-        borderBottomColor: colors.greyF1,
-        
+        borderBottomColor: colors.greyC4,
+
 
     },
 });

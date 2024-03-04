@@ -24,7 +24,7 @@ export default function Button(props) {
   } = props;
 
   return (
-    <View
+    <TouchableOpacity
       style={[
         isPrimaryButton
           ? styles.primaryblueButton
@@ -35,14 +35,15 @@ export default function Button(props) {
               : styles.secondaryButton,
         { ...buttonStyle },
       ]}
+      onPress={onPress}
+
     >
-<Image source={iconpathurl.editIcon}/>
+      {/* <Image source={iconpathurl.editIcon} /> */}
       {Boolean(btnLabel) && (
-        <TouchableOpacity
-          onPress={onPress}
+        <View
 
           style={[
-            baseStyle.alignItemsCenter,baseStyle.justifyContentCenter, { backgroundColor: "red",height:"40%",width:"73%",borderRadius:33 }
+            baseStyle.alignItemsCenter, baseStyle.justifyContentCenter, 
           ]}>
           <Text
             style={[
@@ -58,8 +59,8 @@ export default function Button(props) {
           >
             {btnLabel}
           </Text>
-        </TouchableOpacity>
+        </View>
       )}
-    </View>
+    </TouchableOpacity>
   );
 }

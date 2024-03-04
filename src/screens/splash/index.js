@@ -13,8 +13,8 @@ const Splash = () => {
     }, 5000);
   }, []);
   return (
-    <CustomSafeArea backgroundColor={colors.greyFA}>
-      <Image source={require("../../assets/gifs/star.gif")} style={styles.imgStyle} />
+    <CustomSafeArea backgroundColor={colors.black}>
+      <Image source={require("../../assets/gifs/splash.gif")} style={styles.imgStyle} />
     </CustomSafeArea>
   );
 };
