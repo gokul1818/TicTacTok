@@ -14,7 +14,7 @@ const Splash = () => {
   }, []);
   return (
     <CustomSafeArea backgroundColor={colors.black}>
-      <Image source={require("../../assets/gifs/splash.gif")} style={styles.imgStyle} />
+      <Image source={require("../../assets/gifs/bulb.gif")} style={styles.imgStyle} />
     </CustomSafeArea>
   );
 };

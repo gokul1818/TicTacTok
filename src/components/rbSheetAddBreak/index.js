@@ -1,4 +1,4 @@
-import { View, Text, Image, ImageBackground, StyleSheet, Platform, TouchableOpacity, ScrollView, FlatList } from "react-native";
+import { View, Text, Image, ImageBackground, StyleSheet, Platform, TouchableOpacity, ScrollView, FlatList, Alert, AppState } from "react-native";
 import React, { useEffect, useState } from "react";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { iconpathurl } from "../../assets/iconpath";
@@ -25,7 +25,7 @@ const RbSheetAddBreak = ({ rbSheetRef, }) => {
   const [hours, setHours] = useState(0);
   const [data, setData] = useState({})
   const [minutes, setMinutes] = useState(0);
-  const [seconds, setSeconds] = useState(0);
+  const [seconds, setSeconds] = useState(10);
   const [breakType, setBreakType] = useState(null);
   const [breakTypeErr, setBreakTypeErr] = useState(false);
   const [reasonErr, setReasonErr] = useState(false);
@@ -55,23 +55,29 @@ const RbSheetAddBreak = ({ rbSheetRef, }) => {
     setDeviceName(txt);
   };
 
-
-
   useEffect(() => {
     let timerId;
 
     const startTimer = () => {
       timerId = BackgroundTimer.setInterval(() => {
-        if (seconds === 59) {
-          if (minutes === 59) {
-            setHours((prevHours) => prevHours + 1);
-            setMinutes(0);
+        if (seconds === 0) {
+          if (minutes === 0) {
+            if (hours === 0) {
+              handleTimerEnd();
+
+              setSeconds(10)
+              return;
+            } else {
+              setHours((prevHours) => prevHours - 1);
+              setMinutes(59);
+              setSeconds(59);
+            }
           } else {
-            setMinutes((prevMinutes) => prevMinutes + 1);
+            setMinutes((prevMinutes) => prevMinutes - 1);
+            setSeconds(59);
           }
-          setSeconds(0);
         } else {
-          setSeconds((prevSeconds) => prevSeconds + 1);
+          setSeconds((prevSeconds) => prevSeconds - 1);
         }
       }, 1000);
     };
@@ -80,15 +86,86 @@ const RbSheetAddBreak = ({ rbSheetRef, }) => {
       BackgroundTimer.clearInterval(timerId);
     };
 
+    const handleTimerEnd = () => {
+      setTimerRunning(false);
+      try {
+        const updatedDeviceData = JSON.parse(JSON.stringify(data?.device));
+        const additionalProperty = data?.deviceIndex === 0 ? "12" : data?.deviceIndex === 1 ? "13" : "14";
+        updatedDeviceData[additionalProperty] =
+          updatedDeviceData[additionalProperty] === 1 ? 0 : 1;
+
+        updatedDeviceData.status =
+          updatedDeviceData.status === 1 ? 0 : 1;
+        console.log(updatedDeviceData)
+        set(ref(db, `board1/device/device/${data?.roomIndex}/decives/${data?.deviceIndex}`), {
+          ...updatedDeviceData
+        });
+
+        rbSheetRef.current.close()
+
+
+        console.log('Device status updated successfully.');
+      } catch (error) {
+        console.error('Error occurred:', error);
+      }
+    };
+
+    // AppState.addEventListener('change', handleAppStateChange);
+
     if (timerRunning) {
       startTimer();
     } else {
       stopTimer();
     }
+
     return () => {
+      // AppState.removeEventListener('change', handleAppStateChange);
       stopTimer();
     };
-  }, [timerRunning, seconds, minutes]);
+  }, [timerRunning, seconds, minutes, hours]);
+
+
+  // useEffect(() => {
+  //   let timerId;
+
+  //   const startTimer = () => {
+  //     timerId = setTimeout(() => {
+  //       if (seconds === 0) {
+  //         if (minutes === 0) {
+  //           if (hours === 0) {
+  //             handleSave()
+  //             setTimerRunning(false)
+  //             return;
+  //           } else {
+  //             setHours((prevHours) => prevHours - 1);
+  //             setMinutes(59);
+  //             setSeconds(59);
+  //           }
+  //         } else {
+  //           setMinutes((prevMinutes) => prevMinutes - 1);
+  //           setSeconds(59);
+  //         }
+  //       } else {
+  //         setSeconds((prevSeconds) => prevSeconds - 1);
+  //       }
+  //     }, 1000);
+  //   };
+
+  //   const stopTimer = () => {
+  //     clearTimeout(timerId);
+  //   };
+
+  //   if (timerRunning) {
+  //     startTimer();
+  //   } else {
+  //     stopTimer();
+  //   }
+
+  //   return () => {
+  //     stopTimer();
+  //   };
+  // }, [timerRunning, seconds, minutes, hours]);
+
 
   const startTimer = () => {
     setTimerRunning(true);
@@ -110,66 +187,7 @@ const RbSheetAddBreak = ({ rbSheetRef, }) => {
   const handleOpen = (data) => {
     console.log('Data received in RBSheet:', data);
     setData(data)
-    // Use the received data as needed
-  };
-
-  // const isFormDataValid = () => {
-  //   if (breakType?.value) {
-  //     setBreakTypeErr(false)
-  //     setReasonErr(false)
-  //     if (breakType?.value == "others" && deviceName == "") {
-  //       setReasonErr(true)
-  //       return false;
-  //     }
-  //     startTimer()
-  //     return true;
-  //   } else {
-  //     if (breakType?.value == "others") {
-  //       setBreakTypeErr(true)
-  //       setReasonErr(true)
-  //       return false;
-  //     }
-  //     else {
-  //       setBreakTypeErr(true)
-  //       return false;
-
-  //     }
-  //   }
-  // };
-
-  // const handleAddBreak = async () => {
-  //   try {
-  //     setLoader(true);
-  //     stopTimer()
-  //     let body = {
-  //       driverId: decodeData?.driverId,
-  //       bookingId: bookingId,
-  //       breakType: breakType?.value,
-  //       deviceName: deviceName || null,
-  //       hh: String(hours),
-  //       mm: String(minutes),
-  //       ss: String(seconds)
-  //     };
-  //     /* api call done here */
-  //     const response = await addBreakPostApi(body);
-  //     if (response?.status === 200) {
-  //       resetTimer()
-  //       setTimeout(() => {
-  //         rbSheetRef.current.close();
-  //         setBreakType(null)
-  //         setReason("")
-  //         setLoader(false);
-  //       }, 1000);
-  //     }
-  //   } catch (error) {
-  //     setLoader(false);
-
-  //     if (error.response) {
-  //     } else {
-  //       console.error("An unexpected error occurred:", error.message);
-  //     }
-  //   }
-  // };
+  }
   useEffect(() => {
     setDeviceName(data?.device?.deviceType)
   }, [data])
@@ -200,6 +218,21 @@ const RbSheetAddBreak = ({ rbSheetRef, }) => {
     }
   };
 
+  const handleTimerEnd = (value) => {
+    setHours(0)
+    setMinutes(0)
+    setSeconds(0)
+    setHours(value)
+    setTimerRunning(false)
+  }
+  const handleTimer = () => {
+    if (timerRunning) {
+      stopTimer()
+    }
+    else {
+      startTimer()
+    }
+  }
   return (
     <RBSheet
       ref={rbSheetRef}
@@ -260,13 +293,50 @@ const RbSheetAddBreak = ({ rbSheetRef, }) => {
             disabled={!timerRunning}
           />
         </View>
+        {!timerRunning && <View >
+          <Text style={[baseStyle.font16px, baseStyle.fontWeight500, baseStyle.marginBottom("1%"), { color: colors.black31 }]}>{"Set Timer"}</Text>
+          <View style={[baseStyle.flexDirectionRow, baseStyle.justifyContentSB, { flexWrap: "wrap" }]}>
+
+            <Button
+              isSecondaryButton={true}
+              btnLabel={"1hr"}
+              isPrimaryButton={hours == 1 ? true : false}
+
+              buttonStyle={styles.timerbuttonStyle}
+              onPress={() => handleTimerEnd(1)}
+
+            // disabled={!timerRunning}
+            />
+            <Button
+              isSecondaryButton={true}
+              btnLabel={"2hrs"}
+
+              isPrimaryButton={hours == 2 ? true : false}
+              buttonStyle={styles.timerbuttonStyle}
+              onPress={() => handleTimerEnd(2)}
+            // disabled={!timerRunning}
+            />
+            <Button
+              isSecondaryButton={true}
+              btnLabel={"3hrs"}
+
+              isPrimaryButton={hours == 3 ? true : false}
+              buttonStyle={styles.timerbuttonStyle}
+              onPress={() => handleTimerEnd(3)}
+
+            // disabled={!timerRunning}
+            />
+
+          </View>
+
+        </View>}
         <View style={styles.btnContainer}>
           <Button
             isSecondaryButton={true}
-            btnLabel={strings.addBreak}
+            btnLabel={timerRunning ? "stop Timer" : strings.startTimer}
             buttonStyle={styles.buttonStyle}
-            onPress={startTimer}
-            // disabled={!timerRunning}
+            onPress={handleTimer}
+          // disabled={!timerRunning}
           />
           <Button
             isPrimaryButton={true}
@@ -391,8 +461,12 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP("40%"),
     height: widthPercentageToDP("13%"),
     ...baseStyle.borderRadius8px
+  },
+  timerbuttonStyle: {
+    width: widthPercentageToDP("20%"),
+    height: widthPercentageToDP("13%"),
+    ...baseStyle.borderRadius8px
   }
-
 
 
 });
