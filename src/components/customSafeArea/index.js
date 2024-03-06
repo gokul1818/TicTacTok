@@ -9,11 +9,11 @@ function CustomSafeArea({
   style,
   children,
   backgroundColor,
-  barStyle = "dark-content",
+  barStyle = "light-content",
 }) {
   const CustomStatusBar = ({
     backgroundColor,
-    barStyle = "dark-content",
+    barStyle = "light-content",
     //add more props StatusBar
   }) => {
     const insets = useSafeAreaInsets();
