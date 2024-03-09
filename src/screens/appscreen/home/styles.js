@@ -1,10 +1,10 @@
-import {Platform, StyleSheet} from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from 'react-native-responsive-screen';
-import {baseStyle} from '../../../utils/baseStyles/theme';
-import {colors} from '../../../utils/colors';
+import { baseStyle } from '../../../utils/baseStyles/theme';
+import { colors } from '../../../utils/colors';
 
 const styles = StyleSheet.create({
   container: {
@@ -38,9 +38,9 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP('37%'),
   }),
   img: {
-    ...baseStyle.marginTop('2%'),
-    width: 60,
-    height: 60,
+    ...baseStyle.marginTop('3%'),
+    width: widthPercentageToDP("15%"),
+    height: widthPercentageToDP("15%"),
     borderRadius: 30,
   },
   roomType: {
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   list: {
     ...baseStyle.alignSelfCenter,
     width: widthPercentageToDP('90%'),
-    height: heightPercentageToDP('53%'),
+    height: heightPercentageToDP('50%'),
   },
   item: {
     ...baseStyle.font24px,
@@ -104,17 +104,37 @@ const styles = StyleSheet.create({
   },
   input: {
     borderColor: colors.grey31,
-    borderRadius: 15,
+    borderRadius: 8,
     borderWidth: 1,
     color: colors.black,
   },
   buttonStyle: {
-    width: widthPercentageToDP('60%'),
-    height: widthPercentageToDP('15%'),
-    ...baseStyle.borderRadius8px,
+    width: widthPercentageToDP('30%'),
+    height: widthPercentageToDP('12%'),
+    ...baseStyle.borderRadius4px,
     alignSelf: 'center',
     textAlign: 'center',
   },
+  btnlabelstyle: {
+    fontSize: 12,
+  },
+  timerbuttonStyle: {
+    width: widthPercentageToDP("25%"),
+    height: widthPercentageToDP("13%"),
+    ...baseStyle.borderRadius8px,
+    ...baseStyle.margin("1%")
+  },
+  deleteButtonStyle:{
+    width: widthPercentageToDP("45%"),
+    height: widthPercentageToDP("13%"),
+    ...baseStyle.borderRadius8px,
+    ...baseStyle.margin("1%"),
+    backgroundColor:colors.red,
+    
+  },deleteButtonlabelstyle:{
+    fontSize: 14,
+  }
+,
   greeting: {
     ...baseStyle.font26px,
     ...baseStyle.fontWeight700,
@@ -124,13 +144,28 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: "space-between"
   },
-  addDev: {
-    color: colors.white,
-    ...baseStyle.font20px,
-    ...baseStyle.fontWeight600,
-    textDecorationLine: 'underline',
-  },
+  addMore:[
+    baseStyle.alignItemsCenter,
+    baseStyle.justifyContentCenter,
+    {
+    backgroundColor: colors.secondaryOrange,
+    position: "absolute",
+    bottom: 10,
+    zIndex: 10,
+    width: widthPercentageToDP("15%"),
+    height: widthPercentageToDP("15%"),
+    left: "41%",
+    borderRadius:50
+  }],
+  addDev: [
+    {
+      width: widthPercentageToDP("8%"),
+      height: widthPercentageToDP("8%"),
+    }
+  ]
+  ,
   image: {
     ...baseStyle.marginTop('2%'),
     ...baseStyle.marginLeft('2%'),
@@ -140,8 +175,8 @@ const styles = StyleSheet.create({
   },
   editIcon: {
     position: 'absolute',
-    right: 15,
-    top: 5,
+    right: 2,
+    top: 2,
     width: widthPercentageToDP('5%'),
     height: heightPercentageToDP('5%'),
   },
@@ -177,20 +212,20 @@ const styles = StyleSheet.create({
     ...baseStyle.fontWeight400,
     color: colors.WHITE_FA,
   },
-  modalView:{
-    backgroundColor: colors.white, 
-    alignSelf:"center",
-    height:heightPercentageToDP("45%"),
-    width:widthPercentageToDP("75%"), 
-    padding:"5%", 
-    justifyContent:"center", 
+  modalView: {
+    backgroundColor: colors.white,
+    alignSelf: "center",
+    minHeight: heightPercentageToDP("30%"),
+    width: widthPercentageToDP("75%"),
+    padding: "5%",
+    justifyContent: "center",
     borderRadius: widthPercentageToDP("5%")
   },
-  modalContainer:{
-    backgroundColor:'rgba(0, 0, 0, 0.5)',
-    height:"100%", 
-    alignItems:"center",
-    justifyContent:"center",
-  }, 
+  modalContainer: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
 export default styles;

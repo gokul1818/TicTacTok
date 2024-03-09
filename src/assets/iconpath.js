@@ -12,6 +12,18 @@ export const iconpathurl = {
   search: require('../assets/images/searchSuffix.png'),
   jplogo: require('../assets/images/jpgLogo.png'),
   trash: require('../assets/images/trashLogo.png'),
+  blub: require('../assets/images/bulb.png'),
+  device: require('../assets/images/device.png'),
+  fan: require('../assets/images/fan.png'),
+  socket: require('../assets/images/socket.png'),
+  wifi: require('../assets/images/deviceImg.png'),
+  splashLogo: require('../assets/images/splashLogo.png'),
+  plus: require('../assets/images/plus.png'),
+  light: require('../assets/images/light.png'),
+  bedRoom: require('../assets/images/bedRoom.jpg'),
+  livingRoom: require('../assets/images/livingRoom.jpg'),
+  studyRoom: require('../assets/images/studyRoom.jpg'),
+
 
 
   //reciver Place 

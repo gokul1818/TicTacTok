@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   FlatList,
   Image,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
   Modal,
+  TouchableNativeFeedback,
 } from 'react-native';
 
 // packages
@@ -16,13 +17,13 @@ import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from 'react-native-responsive-screen';
-import {onValue, ref, set, push} from 'firebase/database';
+import { onValue, ref, set, push, remove } from 'firebase/database';
 import RBSheet from 'react-native-raw-bottom-sheet';
 
 // constants
-import {colors} from '../../../utils/colors';
-import {baseStyle} from '../../../utils/baseStyles/theme';
-import {iconpathurl} from '../../../assets/iconpath';
+import { colors } from '../../../utils/colors';
+import { baseStyle } from '../../../utils/baseStyles/theme';
+import { iconpathurl } from '../../../assets/iconpath';
 
 // styles
 import styles from './styles';
@@ -31,10 +32,10 @@ import styles from './styles';
 import RbSheetAddBreak from '../../../components/rbSheetAddBreak';
 
 // firebase
-import {db} from '../../../database/firebaseConfig';
+import { db } from '../../../database/firebaseConfig';
 import Spacer from '../../../components/spacer';
 import Button from '../../../components/button';
-import {strings} from '../../../constants/strings';
+import { strings } from '../../../constants/strings';
 
 const Home = () => {
   // Get current hour
@@ -46,45 +47,47 @@ const Home = () => {
   const [selectedRoomType, setSelectedRoomType] = useState(null);
   const [showDevices, setShowDevices] = useState(!showDevices);
   const [deviceType, setDeviceType] = useState('');
+  const [roomName, setRoomName] = useState('');
   const [imageUri, setImageUri] = useState(null);
   const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
-  const [data, setData] = useState([]);
+  const [isRoomSheetVisible, setIsRoomSheetVisible] = useState(false)
+  const [data, setData] = useState();
   const [device, setDevice] = useState([
-    {
-      roomType: 'LivingRoom1',
-      img: 'https://jumanji.livspace-cdn.com/magazine/wp-content/uploads/2019/09/16191216/Contemporary-Living-Room-Easy-Functionality.jpg',
-      decives: [
-        {
-          deviceType: 'Fan',
-          status: 1,
-          img: 'https://jumanji.livspace-cdn.com/magazine/wp-content/uploads/2019/09/16191216/Contemporary-Living-Room-Easy-Functionality.jpg',
-          12: 1,
-        },
-        {
-          deviceType: 'Fan',
-          status: 1,
-          img: 'https://jumanji.livspace-cdn.com/magazine/wp-content/uploads/2019/09/16191216/Contemporary-Living-Room-Easy-Functionality.jpg',
-          13: 1,
-        },
-        {
-          deviceType: 'Fan',
-          status: 1,
-          img: 'https://jumanji.livspace-cdn.com/magazine/wp-content/uploads/2019/09/16191216/Contemporary-Living-Room-Easy-Functionality.jpg',
-          14: 1,
-        },
-      ],
-    },
+    // {
+    //   roomType: 'LivingRoom',
+    //   img: 'https://jumanji.livspace-cdn.com/magazine/wp-content/uploads/2019/09/16191216/Contemporary-Living-Room-Easy-Functionality.jpg',
+    //   devices: [
+    //     // {
+    //     //   deviceType: 'Fan',
+    //     //   status: 1,
+    //     //   img: 'https://jumanji.livspace-cdn.com/magazine/wp-content/uploads/2019/09/16191216/Contemporary-Living-Room-Easy-Functionality.jpg',
+    //     //   12: 1,
+    //     // },
+
+    //   ],
+    // },
   ]);
 
   const addOnData = () => {
-    const newRoom = {
-      roomType: selectedRoomType,
-      img: 'https://jumanji.livspace-cdn.com/magazine/wp-content/uploads/2019/09/16191216/Contemporary-Living-Room-Easy-Functionality.jpg',
-      devices: [],
-    };
+    const updatedDevice = [
+      ...device,
+      {
+        roomType: selectedRoomType,
+        img: 'https://png.pngtree.com/png-clipart/20190516/original/pngtree-vector-illustration-of-a-cartoon-interior-of-an-orange-home-room-png-image_3572084.jpg',
+        devices: [
+          {
+            deviceType: 'Fan',
+            status: 1,
+            img: 'https://jumanji.livspace-cdn.com/magazine/wp-content/uploads/2019/09/16191216/Contemporary-Living-Room-Easy-Functionality.jpg',
+            12: 1,
+          },
+        ],
+      }
+    ];
+
     if (selectedRoomType) {
       set(ref(db, 'board1/device'), {
-        device: [...device, newRoom],
+        device: updatedDevice,
       });
       console.log('Room added successfully:', selectedRoomType);
       bottomSheetRef.current.close();
@@ -93,35 +96,16 @@ const Home = () => {
     }
   };
 
-  const handleAddDeviceType = () => {
-    if (!deviceType) {
-      console.log('Device type cannot be empty');
-      return;
-    }
-    try {
-      push(ref(db, `board1/device/${selectedRoom.index}/devices`), {
-        deviceType: deviceType,
-        img: imageUri,
-        status: 0,
-      });
 
-      setDeviceType('');
-      setImageUri(null);
-      setShowBottomSheet(false);
 
-      console.log('Device added successfully to the room.');
-    } catch (error) {
-      console.error('Error adding device:', error);
-    }
-  };
-
-  const imageUpload = () => {};
 
   const fetchData = useCallback(() => {
     const reference = ref(db, 'board1/device/device');
     onValue(reference, snapshot => {
       const boardData = snapshot.val();
-      setDevice(boardData);
+      if (boardData !== null) {
+        setDevice(boardData);
+      }
     });
 
     return () => {
@@ -153,7 +137,6 @@ const Home = () => {
       // Create a copy of the device data
       const updatedDeviceData = JSON.parse(JSON.stringify(device));
       // Update the status of the device at the specified roomIndex and deviceIndex
-      console.log(updatedDeviceData);
       updatedDeviceData.status = updatedDeviceData.status === 1 ? 0 : 1;
 
       // Set additional properties "12", "13", or "14" based on deviceIndex
@@ -162,13 +145,11 @@ const Home = () => {
       updatedDeviceData[additionalProperty] =
         updatedDeviceData[additionalProperty] === 1 ? 0 : 1;
 
-      console.log(updatedDeviceData);
       // Update the device data state
       // setDevice(updatedDeviceData);
-      console.log(device, 'device');
 
       // Update the device status in the database
-      set(ref(db, `board1/device/device/${roomIndex}/decives/${deviceIndex}`), {
+      set(ref(db, `board1/device/device/${roomIndex}/devices/${deviceIndex}`), {
         ...updatedDeviceData,
       });
       fetchData();
@@ -185,88 +166,193 @@ const Home = () => {
       deviceIndex: deviceIndex,
       device: device,
     };
+
     rbSheetRef.current.open(dataToPass);
   };
 
-  const renderItem = ({item, index}) => (
+  const handleDeviceDelete = (roomIndex, deviceIndex, device) => {
+
+    const path = `board1/device/device/${roomIndex}/devices/${deviceIndex}`;
+    console.log(path, "pathhhh")
+    remove(ref(db, path))
+      .then(() => {
+        console.log('Data removed successfully');
+        fetchData();
+
+      })
+      .catch((error) => {
+        console.error('Error removing data:', error);
+      });
+  };
+
+  const handleDeviceSelected = (item, index) => {
+    console.log(index);
+    setSelectedRooms({ item: item?.roomType, index });
+    setShowDevices(true);
+  }
+
+
+  const handleSaveRoomType = () => {
+    if (!roomName) {
+      console.log('Room Name cannot be empty');
+      return;
+    }
+    try {
+      const deviceRef = ref(db, `board1/device/device/${selectedRoom.index}`);
+      console.log(deviceRef)
+      console.log(deviceRef, "dsd");
+      set(deviceRef, {
+        devices: data,
+        img: 'https://png.pngtree.com/png-clipart/20190516/original/pngtree-vector-illustration-of-a-cartoon-interior-of-an-orange-home-room-png-image_3572084.jpg',
+        roomType: roomName
+      });
+      setRoomName('');
+      setIsRoomSheetVisible(false)
+      // fetchData()
+      console.log('Device added successfully to the room.');
+    } catch (error) {
+      console.error('Error adding device:', error);
+    }
+  }
+
+  const handleAddDeviceType = () => {
+    console.log(data.length, "adata");
+    if (!deviceType) {
+      console.log('Device type cannot be empty');
+      return;
+    }
+    try {
+      const deviceRef = ref(db, `board1/device/device/${selectedRoom.index}/devices/${data?.length}`);
+      console.log(deviceRef, "dsd");
+      set(deviceRef, {
+        deviceType: deviceType,
+        status: 0,
+        img: 'https://banner2.cleanpng.com/20180625/efs/kisspng-computer-icons-icon-design-industrial-design-5b31b59368fb15.56426585152998440343.jpg',
+        // 12: 0,
+      });
+      setDeviceType('');
+      setIsBottomSheetVisible(false)
+      // fetchData()
+      console.log('Device added successfully to the room.');
+    } catch (error) {
+      console.error('Error adding device:', error);
+    }
+  };
+
+  useEffect(() => {
+    setData(
+      device
+        ?.filter(x => selectedRoom?.item === x.roomType)
+        ?.map(x => x.devices)
+        ?.flat()
+        ?.filter(Boolean)
+    );
+  }, [selectedRoom, device]);
+
+
+
+
+
+  const renderItem = ({ item, index }) => (
     <TouchableOpacity
       style={styles.imgContainer(selectedRoom, item, index)}
-      onPress={() => {
-        setSelectedRooms({item: item?.roomType, index});
-        setShowDevices(prevState => !prevState);
-      }}>
-      <Image source={{uri: item.img}} style={styles.img} />
+      onPress={() =>
+        handleDeviceSelected(item, index)
+      }>
+      <Image source={
+        item?.roomType.startsWith("Bed") ? iconpathurl.bedRoom :
+          item?.roomType.startsWith("Study") ? iconpathurl.studyRoom :
+            item?.roomType.startsWith("Living") ? iconpathurl.livingRoom :
+                iconpathurl.livingRoom
+      }
+      resizeMode='cover'
+        style={styles.img}
+      />
+      <TouchableOpacity
+        onPress={() => { setIsRoomSheetVisible(true), setRoomName(item?.roomType) }}
+        style={styles.editView}>
+        <Image
+          source={iconpathurl.editIcon}
+          style={styles.editIcon}
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
       <Text style={styles.roomType}>{item.roomType}</Text>
       <Text style={styles.deviceName}>
         {item.device && `${item.device.length} Device`}
       </Text>
     </TouchableOpacity>
   );
-  const deciverenderItem = ({item}) => {
+
+  const deciverenderItem = (device, deviceIndex) => {
     return (
       <>
         {showDevices && (
           <>
-            <View style={styles.row}>
-              <Text style={styles.item}>{selectedRoom?.item} </Text>
-              <Spacer width={widthPercentageToDP('27%')} />
-              <TouchableOpacity
-                onPress={() => {
-                  setIsBottomSheetVisible(true);
-                }}>
-                <Text style={styles.addDev}>{strings.addDevTxt}</Text>
-              </TouchableOpacity>
+            <View style={[baseStyle.flexDirectionRow, baseStyle.justifyContentSB]}>
             </View>
             <Spacer height={heightPercentageToDP('2%')} />
-            <FlatList
+            <TouchableOpacity
+              key={deviceIndex} style={styles.deviceIndex}
+              onPress={() =>
+                handleEdit(selectedRoom?.index, deviceIndex, device)
+              }>
+              <View>
+                <Image source={
+                  device?.deviceType.startsWith("Fan") ? iconpathurl.fan :
+                    device?.deviceType.startsWith("Bulb") ? iconpathurl.blub :
+                      device?.deviceType.startsWith("Socket") ? iconpathurl.socket :
+                        device?.deviceType.startsWith("Light") ? iconpathurl.light :
+                          iconpathurl.wifi
+                }
+                  style={styles.image}
+                />
+
+                {/* <TouchableOpacity
+                  onPress={() => handleDeviceDelete(selectedRoom?.index, deviceIndex, device)}
+                  style={styles.editView}>
+                  <Image
+                    source={iconpathurl.trash}
+                    style={styles.editIcon}
+                    resizeMode="contain"
+                  />
+                </TouchableOpacity> */}
+                <View style={styles.deviceView}>
+                  <Text style={styles.deviceText}>{device?.deviceType}</Text>
+                  <Switch
+                    value={device?.status === 1 ? true : false}
+                    trackColor={{
+                      true: colors.grey3B,
+                      false: colors.grey3B,
+                    }}
+                    thumbColor={
+                      device?.status === 1
+                        ? colors.secondaryOrange
+                        : colors.blueEA
+                    }
+                    style={{
+                      borderRadius: 20,
+                      transform: [{ scaleX: 1 }, { scaleY: 1 }],
+                    }}
+                    onChange={() =>
+                      updateDeviceStatus(
+                        selectedRoom?.index,
+                        deviceIndex,
+                        device,
+                      )
+                    }
+                  />
+                </View>
+              </View>
+            </TouchableOpacity>
+            {/* <FlatList
               data={item}
               numColumns={2}
               keyExtractor={(device, deviceIndex) => deviceIndex.toString()} // Change 'deviceIndex' to whatever unique identifier you have for each device
-              renderItem={({item: device, index: deviceIndex}) => (
-                <TouchableOpacity key={deviceIndex} style={styles.deviceIndex}>
-                  <View>
-                    <Image source={{uri: device.img}} style={styles.image} />
-                    <TouchableOpacity
-                      onPress={() =>
-                        handleEdit(selectedRoom?.index, deviceIndex, device)
-                      }
-                      style={styles.editView}>
-                      <Image
-                        source={iconpathurl.editIcon}
-                        style={styles.editIcon}
-                        resizeMode="contain"
-                      />
-                    </TouchableOpacity>
-                    <View style={styles.deviceView}>
-                      <Text style={styles.deviceText}>{device.deviceType}</Text>
-                      <Switch
-                        value={device.status === 1 ? true : false}
-                        trackColor={{
-                          true: colors.grey3B,
-                          false: colors.grey3B,
-                        }}
-                        thumbColor={
-                          device.status === 1
-                            ? colors.secondaryOrange
-                            : colors.blueEA
-                        }
-                        style={{
-                          borderRadius: 20,
-                          transform: [{scaleX: 1}, {scaleY: 1}],
-                        }}
-                        onChange={() =>
-                          updateDeviceStatus(
-                            selectedRoom?.index,
-                            deviceIndex,
-                            device,
-                          )
-                        }
-                      />
-                    </View>
-                  </View>
-                </TouchableOpacity>
+              renderItem={({ item: device, index: deviceIndex }) => (
+               
               )}
-            />
+            /> */}
           </>
         )}
       </>
@@ -280,7 +366,7 @@ const Home = () => {
           style={[
             baseStyle.font26px,
             baseStyle.fontWeight700,
-            {color: colors.white_FF, fontFamily: 'robo'},
+            { color: colors.white_FF, fontFamily: 'robo' },
           ]}>
           {greetingMessage}
         </Text>
@@ -303,7 +389,7 @@ const Home = () => {
             </View>
             <Spacer height={heightPercentageToDP('2%')} />
             <FlatList
-              style={{width: widthPercentageToDP('90%')}}
+              style={{ width: widthPercentageToDP('90%') }}
               data={device}
               renderItem={renderItem}
               keyExtractor={(item, index) => index.toString()}
@@ -312,19 +398,57 @@ const Home = () => {
               showsHorizontalScrollIndicator={false}
             />
           </View>
+          {console.log(selectedRoom, "selectedRoom")}
+
+          {selectedRoom?.item &&
+            (
+              <View style={[baseStyle.flexDirectionRow, baseStyle.justifyContentSB,]}>
+
+                <Text style={styles.item}>{selectedRoom?.item} </Text>
+
+                {/* <TouchableOpacity
+                  style={{ position: "absolute", top: 100, zIndex: 10, left: "50%" }}
+                  onPress={() => {
+                    setIsBottomSheetVisible(true);
+                  }}>
+                  <Text style={styles.addDev}>{strings.addDevTxt}</Text>
+                </TouchableOpacity> */}
+              </View>
+            )
+          }
           <FlatList
             style={styles.list}
             data={
               device
-                ?.filter(x => selectedRoom?.item === x.roomType)
-                ?.map(x => x.decives) || []
+                ?.filter(x => selectedRoom?.item === x.roomType && x.devices)
+                ?.map(x => x.devices)
+                ?.flat()
+                ?.filter(Boolean)
             }
-            renderItem={deciverenderItem}
+            renderItem={({ item, index }) => deciverenderItem(item, index)}
             keyExtractor={(item, index) => index.toString()}
-            // numColumns={2}
+            numColumns={2}
             // horizontal={false}
-            // showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
           />
+
+          {selectedRoom?.item && device
+            ?.filter(x => selectedRoom?.item === x.roomType && x.devices)
+            ?.map(x => x.devices)
+            ?.flat()
+            ?.filter(Boolean).length < 6 &&
+            (
+              <View style={[baseStyle.flexDirectionRow,]}>
+                <TouchableOpacity
+                  style={styles.addMore}
+                  onPress={() => {
+                    setIsBottomSheetVisible(true);
+                  }}>
+                  <Image source={iconpathurl.plus} style={styles.addDev} />
+                </TouchableOpacity>
+              </View>
+            )
+          }
         </View>
       </View>
       <RbSheetAddBreak rbSheetRef={rbSheetRef} data={data} />
@@ -332,7 +456,7 @@ const Home = () => {
         ref={bottomSheetRef}
         closeOnDragDown={true}
         height={heightPercentageToDP('30%')}
-        customStyles={{container: styles.rbSheet}}>
+        customStyles={{ container: styles.rbSheet }}>
         <View style={styles.bottomSheetContent}>
           <Text style={styles.label}>Room Type</Text>
           <Spacer height={heightPercentageToDP('2%')} />
@@ -359,32 +483,113 @@ const Home = () => {
               <Spacer height={heightPercentageToDP('2%')} />
               <TextInput
                 style={styles.input}
-                placeholder="Enter device type"
+                placeholder="Enter Device Type"
                 value={deviceType}
                 onChangeText={text => setDeviceType(text)}
               />
-              <Spacer height={heightPercentageToDP('2%')} />
-              <TouchableOpacity onPress={imageUpload} style={styles.input}>
-                <Text>Upload Image</Text>
-              </TouchableOpacity>
-              {imageUri && (
-                <Image source={{uri: imageUri}} style={styles.image} />
-              )}
-              <Spacer height={heightPercentageToDP('2%')} />
+              <View style={[baseStyle.flexDirectionRow, baseStyle.justifyContentCenter, { flexWrap: "wrap" }]}>
 
-              <Button
-                isPrimaryButton={true}
-                btnLabel="Add Device"
-                buttonStyle={styles.buttonStyle}
-                onPress={() => handleAddDeviceType()}
-              />
+                <Button
+                  isSecondaryButton={true}
+                  btnLabel={"Fan"}
+                  isPrimaryButton={deviceType == "Fan" ? true : false}
+
+                  buttonStyle={styles.timerbuttonStyle}
+                  onPress={() => setDeviceType("Fan")}
+                  textColor={styles.btnlabelstyle}
+                />
+                <Button
+                  isSecondaryButton={true}
+                  btnLabel={"Bulb"}
+
+                  isPrimaryButton={deviceType == "Bulb" ? true : false}
+                  buttonStyle={styles.timerbuttonStyle}
+                  onPress={() => setDeviceType("Bulb")}
+                  textColor={styles.btnlabelstyle}
+                />
+                <Button
+                  isSecondaryButton={true}
+                  btnLabel={"Socket"}
+
+                  isPrimaryButton={deviceType == "Socket" ? true : false}
+                  buttonStyle={styles.timerbuttonStyle}
+                  onPress={() => setDeviceType("Socket")}
+                  textColor={styles.btnlabelstyle}
+                />
+                <Button
+                  isSecondaryButton={true}
+                  btnLabel={"Light"}
+
+                  isPrimaryButton={deviceType == "Light" ? true : false}
+                  buttonStyle={styles.timerbuttonStyle}
+                  onPress={() => setDeviceType("Light")}
+                  textColor={styles.btnlabelstyle}
+                />
+              </View>
               <Spacer height={heightPercentageToDP('2%')} />
-              <Button
-                isPrimaryButton={true}
-                btnLabel="Cancel"
-                buttonStyle={styles.buttonStyle}
-                onPress={() => setIsBottomSheetVisible(false)}
+              <View style={[baseStyle.flexDirectionRow, baseStyle.justifyContentSB]}>
+                <Button
+                  isPrimaryButton={true}
+                  btnLabel="Cancel"
+                  buttonStyle={styles.buttonStyle}
+                  textColor={styles.btnlabelstyle}
+                  onPress={() => setIsBottomSheetVisible(false)}
+                />
+                <Button
+                  isPrimaryButton={true}
+                  btnLabel="Add Device"
+                  buttonStyle={styles.buttonStyle}
+                  textColor={styles.btnlabelstyle}
+
+                  onPress={() => handleAddDeviceType()}
+                />
+              </View>
+
+            </View>
+          </View>
+        </Modal>
+      )}
+      {isRoomSheetVisible && (
+        <Modal isVisible={isRoomSheetVisible} transparent={true}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalView}>
+              <Text style={styles.label}>Edit Room</Text>
+              <Spacer height={heightPercentageToDP('2%')} />
+              <TextInput
+                style={styles.input}
+                placeholder="Enter Room Name"
+                value={roomName}
+                onChangeText={text => setRoomName(text)}
               />
+              <View style={[baseStyle.flexDirectionRow, baseStyle.justifyContentCenter, baseStyle.marginTop("1%")]}>
+                <Button
+                  isSecondaryButton={true}
+                  btnLabel={"Delete Room"}
+                  isPrimaryButton
+                  buttonStyle={styles.deleteButtonStyle}
+                  onPress={() => { }}
+                  textColor={styles.deleteButtonlabelstyle}
+                />
+              </View>
+              <Spacer height={heightPercentageToDP('2%')} />
+              <View style={[baseStyle.flexDirectionRow, baseStyle.justifyContentSB]}>
+                <Button
+                  isPrimaryButton={true}
+                  btnLabel="Cancel"
+                  buttonStyle={styles.buttonStyle}
+                  textColor={styles.btnlabelstyle}
+                  onPress={() => setIsRoomSheetVisible(false)}
+                />
+                <Button
+                  isPrimaryButton={true}
+                  btnLabel="Save"
+                  buttonStyle={styles.buttonStyle}
+                  textColor={styles.btnlabelstyle}
+
+                  onPress={() => handleSaveRoomType()}
+                />
+              </View>
+
             </View>
           </View>
         </Modal>

@@ -97,7 +97,7 @@ const RbSheetAddBreak = ({ rbSheetRef, }) => {
         updatedDeviceData.status =
           updatedDeviceData.status === 1 ? 0 : 1;
         console.log(updatedDeviceData)
-        set(ref(db, `board1/device/device/${data?.roomIndex}/decives/${data?.deviceIndex}`), {
+        set(ref(db, `board1/device/device/${data?.roomIndex}/devices/${data?.deviceIndex}`), {
           ...updatedDeviceData
         });
 
@@ -205,7 +205,7 @@ const RbSheetAddBreak = ({ rbSheetRef, }) => {
       //   updatedDeviceData[additionalProperty] === 1 ? 0 : 1;
 
       console.log(updatedDeviceData)
-      set(ref(db, `board1/device/device/${data?.roomIndex}/decives/${data?.deviceIndex}`), {
+      set(ref(db, `board1/device/device/${data?.roomIndex}/devices/${data?.deviceIndex}`), {
         ...updatedDeviceData
       });
       // fetchData()
@@ -218,11 +218,11 @@ const RbSheetAddBreak = ({ rbSheetRef, }) => {
     }
   };
 
-  const handleTimerEnd = (value) => {
+  const handleTimerEnd = (value,state) => {
     setHours(0)
     setMinutes(0)
     setSeconds(0)
-    setHours(value)
+    state == "min"? setMinutes(value):setHours(value)
     setTimerRunning(false)
   }
   const handleTimer = () => {
@@ -299,30 +299,30 @@ const RbSheetAddBreak = ({ rbSheetRef, }) => {
 
             <Button
               isSecondaryButton={true}
+              btnLabel={"10min"}
+              isPrimaryButton={minutes == 10 ? true : false}
+
+              buttonStyle={styles.timerbuttonStyle}
+              onPress={() => handleTimerEnd(10,"min")}
+
+            // disabled={!timerRunning}
+            />
+            <Button
+              isSecondaryButton={true}
+              btnLabel={"30min"}
+
+              isPrimaryButton={minutes == 30 ? true : false}
+              buttonStyle={styles.timerbuttonStyle}
+              onPress={() => handleTimerEnd(30,"min")}
+            // disabled={!timerRunning}
+            />
+            <Button
+              isSecondaryButton={true}
               btnLabel={"1hr"}
+
               isPrimaryButton={hours == 1 ? true : false}
-
               buttonStyle={styles.timerbuttonStyle}
-              onPress={() => handleTimerEnd(1)}
-
-            // disabled={!timerRunning}
-            />
-            <Button
-              isSecondaryButton={true}
-              btnLabel={"2hrs"}
-
-              isPrimaryButton={hours == 2 ? true : false}
-              buttonStyle={styles.timerbuttonStyle}
-              onPress={() => handleTimerEnd(2)}
-            // disabled={!timerRunning}
-            />
-            <Button
-              isSecondaryButton={true}
-              btnLabel={"3hrs"}
-
-              isPrimaryButton={hours == 3 ? true : false}
-              buttonStyle={styles.timerbuttonStyle}
-              onPress={() => handleTimerEnd(3)}
+              onPress={() => handleTimerEnd(1,"hours")}
 
             // disabled={!timerRunning}
             />
@@ -463,7 +463,7 @@ const styles = StyleSheet.create({
     ...baseStyle.borderRadius8px
   },
   timerbuttonStyle: {
-    width: widthPercentageToDP("20%"),
+    width: widthPercentageToDP("25%"),
     height: widthPercentageToDP("13%"),
     ...baseStyle.borderRadius8px
   }

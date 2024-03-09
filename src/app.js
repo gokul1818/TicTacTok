@@ -7,12 +7,13 @@ import { persistor, store } from "./redux/store";
 import Splash from "./screens/splash";
 import Home from "./screens/appscreen/home";
 
+
 const App = () => {
   const [isSplashVisible, setIsSplashVisisble] = useState(true)
   useEffect(() => {
     setTimeout(() => {
       setIsSplashVisisble(false);
-    }, 5000);
+    }, 1000);
   }, []);
   if (isSplashVisible) {
     return <Splash />;

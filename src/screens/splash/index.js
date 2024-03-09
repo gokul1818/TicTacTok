@@ -10,11 +10,11 @@ const Splash = () => {
   useEffect(() => {
     setTimeout(() => {
       NavigationServices.navigate(SCREENS.HOME);
-    }, 5000);
+    }, 1000);
   }, []);
   return (
-    <CustomSafeArea backgroundColor={colors.black}>
-      <Image source={require("../../assets/gifs/bulb.gif")} style={styles.imgStyle} />
+    <CustomSafeArea backgroundColor={colors.grey3B}>
+      <Image source={iconpathurl.splashLogo} style={styles.imgStyle} />
     </CustomSafeArea>
   );
 };
@@ -25,5 +25,7 @@ const styles = StyleSheet.create({
   imgStyle: {
     height: "100%",
     width: "100%",
+    resizeMode:"contain",
+    backgroundColor:colors.grey3B
   },
 });
