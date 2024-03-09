@@ -10,14 +10,14 @@ import Home from "./screens/appscreen/home";
 
 const App = () => {
   const [isSplashVisible, setIsSplashVisisble] = useState(true)
-  useEffect(() => {
-    setTimeout(() => {
-      setIsSplashVisisble(false);
-    }, 1000);
-  }, []);
-  if (isSplashVisible) {
-    return <Splash />;
-  }
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setIsSplashVisisble(false);
+  //   }, 1000);
+  // }, []);
+  // if (isSplashVisible) {
+  //   return <Splash />;
+  // }
   console.log('')
   return (
     <Provider store={store}>
